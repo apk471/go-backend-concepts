@@ -1,25 +1,64 @@
 {
   "openapi": "3.0.2",
-  "info": {
-    "title": "Boilerplate REST API - Documentation",
-    "description": "Boilerplate REST API - Documentation",
-    "version": "1.0.0"
-  },
-  "servers": [
-    {
-      "url": "http://localhost:8080",
-      "description": "Local Server"
-    }
-  ],
   "paths": {
+    "/api/v1/auth/me": {
+      "get": {
+        "description": "Get the currently authenticated user from the JWT bearer token",
+        "summary": "Get authenticated user",
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [],
+        "operationId": "getMe",
+        "responses": {
+          "200": {
+            "description": "200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user_id": {
+                      "type": "string"
+                    },
+                    "user_role": {
+                      "type": "string"
+                    },
+                    "permissions": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "user_id",
+                    "permissions"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/status": {
       "get": {
-        "summary": "Get health",
         "description": "Get health status",
+        "summary": "Get health",
+        "tags": [
+          "Health"
+        ],
+        "parameters": [],
         "operationId": "getHealth",
         "responses": {
           "200": {
-            "description": "",
+            "description": "200",
             "content": {
               "application/json": {
                 "schema": {
@@ -27,7 +66,10 @@
                   "properties": {
                     "status": {
                       "type": "string",
-                      "enum": ["healthy", "unhealthy"]
+                      "enum": [
+                        "healthy",
+                        "unhealthy"
+                      ]
                     },
                     "timestamp": {
                       "type": "string",
@@ -42,27 +84,81 @@
                         "database": {
                           "type": "object",
                           "properties": {
-                            "status": { "type": "string" },
-                            "response_time": { "type": "string" },
-                            "error": { "type": "string" }
-                          }
+                            "status": {
+                              "type": "string"
+                            },
+                            "response_time": {
+                              "type": "string"
+                            },
+                            "error": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "status",
+                            "response_time"
+                          ]
                         },
                         "redis": {
                           "type": "object",
                           "properties": {
-                            "status": { "type": "string" },
-                            "response_time": { "type": "string" },
-                            "error": { "type": "string" }
-                          }
+                            "status": {
+                              "type": "string"
+                            },
+                            "response_time": {
+                              "type": "string"
+                            },
+                            "error": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "status",
+                            "response_time"
+                          ]
                         }
-                      }
+                      },
+                      "required": [
+                        "database"
+                      ]
                     }
-                  }
+                  },
+                  "required": [
+                    "status",
+                    "timestamp",
+                    "environment",
+                    "checks"
+                  ]
                 }
               }
             }
           }
         }
+      }
+    }
+  },
+  "info": {
+    "version": "1.0.0",
+    "title": "Boilerplate REST API - Documentation",
+    "description": "Boilerplate REST API - Documentation"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Local Server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "x-service-token": {
+        "type": "apiKey",
+        "name": "x-service-token",
+        "in": "header"
       }
     }
   }
