@@ -1,6 +1,52 @@
 {
   "openapi": "3.0.2",
   "paths": {
+    "/api/v1/auth/me": {
+      "get": {
+        "description": "Get the currently authenticated user from the JWT bearer token",
+        "summary": "Get authenticated user",
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [],
+        "operationId": "getMe",
+        "responses": {
+          "200": {
+            "description": "200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user_id": {
+                      "type": "string"
+                    },
+                    "user_role": {
+                      "type": "string"
+                    },
+                    "permissions": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "user_id",
+                    "permissions"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/api/v1/auth/oauth/login": {
       "get": {
         "description": "Start the OAuth authorization code flow. By default this redirects to the provider. Use response=json to get the authorization URL in OpenAPI.",
@@ -214,5 +260,19 @@
       "url": "http://localhost:8080",
       "description": "Local Server"
     }
-  ]
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "x-service-token": {
+        "type": "apiKey",
+        "name": "x-service-token",
+        "in": "header"
+      }
+    }
+  }
 }
