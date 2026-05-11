@@ -9,5 +9,6 @@ import (
 func registerAuthRoutes(r *echo.Group, h *handler.Handlers, middlewares *middleware.Middlewares) {
 	auth := r.Group("/auth")
 
-	auth.GET("/me", h.Auth.GetMe, middlewares.Auth.RequireAuth)
+	auth.GET("/oauth/login", h.Auth.StartOAuth)
+	auth.GET("/oauth/callback", h.Auth.CompleteOAuth)
 }

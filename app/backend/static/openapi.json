@@ -1,15 +1,15 @@
 {
   "openapi": "3.0.2",
   "paths": {
-    "/api/v1/auth/me": {
+    "/api/v1/auth/oauth/login": {
       "get": {
-        "description": "Get the currently authenticated user from the JWT bearer token",
-        "summary": "Get authenticated user",
+        "description": "Start the OAuth authorization code flow. By default this redirects to the provider. Use response=json to get the authorization URL in OpenAPI.",
+        "summary": "Start OAuth login",
         "tags": [
           "Auth"
         ],
         "parameters": [],
-        "operationId": "getMe",
+        "operationId": "startOAuth",
         "responses": {
           "200": {
             "description": "200",
@@ -18,33 +18,100 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "user_id": {
-                      "type": "string"
+                    "auth_url": {
+                      "type": "string",
+                      "format": "uri"
                     },
-                    "user_role": {
+                    "state": {
                       "type": "string"
-                    },
-                    "permissions": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
                     }
                   },
                   "required": [
-                    "user_id",
-                    "permissions"
+                    "auth_url",
+                    "state"
+                  ]
+                }
+              }
+            }
+          },
+          "302": {
+            "description": "302",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "nullable": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/oauth/callback": {
+      "get": {
+        "description": "Complete the OAuth authorization code flow by exchanging code for provider tokens.",
+        "summary": "Complete OAuth callback",
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "operationId": "completeOAuth",
+        "responses": {
+          "200": {
+            "description": "200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "access_token": {
+                      "type": "string"
+                    },
+                    "token_type": {
+                      "type": "string"
+                    },
+                    "expires_in": {
+                      "type": "number"
+                    },
+                    "refresh_token": {
+                      "type": "string"
+                    },
+                    "scope": {
+                      "type": "string"
+                    },
+                    "id_token": {
+                      "type": "string"
+                    },
+                    "raw": {
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "access_token",
+                    "token_type"
                   ]
                 }
               }
             }
           }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
+        }
       }
     },
     "/status": {
@@ -147,19 +214,5 @@
       "url": "http://localhost:8080",
       "description": "Local Server"
     }
-  ],
-  "components": {
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
-      },
-      "x-service-token": {
-        "type": "apiKey",
-        "name": "x-service-token",
-        "in": "header"
-      }
-    }
-  }
+  ]
 }

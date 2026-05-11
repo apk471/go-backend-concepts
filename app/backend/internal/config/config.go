@@ -54,7 +54,17 @@ type IntegrationConfig struct {
 }
 
 type AuthConfig struct {
-	SecretKey string `koanf:"secret_key" validate:"required"`
+	SecretKey string      `koanf:"secret_key"`
+	OAuth     OAuthConfig `koanf:"oauth"`
+}
+
+type OAuthConfig struct {
+	ClientID     string `koanf:"client_id"`
+	ClientSecret string `koanf:"client_secret"`
+	AuthURL      string `koanf:"auth_url"`
+	TokenURL     string `koanf:"token_url"`
+	RedirectURL  string `koanf:"redirect_url"`
+	Scopes       string `koanf:"scopes"`
 }
 
 func LoadConfig() (*Config, error) {

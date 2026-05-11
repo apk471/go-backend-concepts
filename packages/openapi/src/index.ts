@@ -31,42 +31,24 @@ const operationMapper: OperationMapper = (operation, appRoute) => ({
     : {}),
 });
 
-export const OpenAPI = Object.assign(
-  generateOpenApi(
-    apiContract,
-    {
-      openapi: "3.0.2",
-      info: {
-        version: "1.0.0",
-        title: "Boilerplate REST API - Documentation",
-        description: "Boilerplate REST API - Documentation",
-      },
-      servers: [
-        {
-          url: "http://localhost:8080",
-          description: "Local Server",
-        },
-      ],
-    },
-    {
-      operationMapper,
-      setOperationId: true,
-    }
-  ),
+export const OpenAPI = generateOpenApi(
+  apiContract,
   {
-    components: {
-      securitySchemes: {
-        bearerAuth: {
-          type: "http",
-          scheme: "bearer",
-          bearerFormat: "JWT",
-        },
-        "x-service-token": {
-          type: "apiKey",
-          name: "x-service-token",
-          in: "header",
-        },
-      },
+    openapi: "3.0.2",
+    info: {
+      version: "1.0.0",
+      title: "Boilerplate REST API - Documentation",
+      description: "Boilerplate REST API - Documentation",
     },
+    servers: [
+      {
+        url: "http://localhost:8080",
+        description: "Local Server",
+      },
+    ],
+  },
+  {
+    operationMapper,
+    setOperationId: true,
   }
 );
