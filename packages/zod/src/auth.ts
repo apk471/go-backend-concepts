@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+export const ZAuthMeResponse = z.object({
+  user_id: z.string(),
+  user_role: z.string().optional(),
+  permissions: z.array(z.string()),
+});
+
 export const ZOAuthLoginResponse = z.object({
   auth_url: z.string().url(),
   state: z.string(),
