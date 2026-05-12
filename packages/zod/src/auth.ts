@@ -17,6 +17,13 @@ export const ZServiceTokenResponse = z.object({
   message: z.string(),
 });
 
+export const ZCookieAuthResponse = z.object({
+  authenticated: z.boolean(),
+  auth_type: z.string(),
+  cookie_name: z.string(),
+  message: z.string(),
+});
+
 export const ZOAuthTokenResponse = z.object({
   access_token: z.string(),
   token_type: z.string(),

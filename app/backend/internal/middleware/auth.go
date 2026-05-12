@@ -18,6 +18,8 @@ type AuthMiddleware struct {
 	server *server.Server
 }
 
+const SessionCookieName = "auth_session"
+
 func NewAuthMiddleware(s *server.Server) *AuthMiddleware {
 	return &AuthMiddleware{
 		server: s,
@@ -100,6 +102,40 @@ func (auth *AuthMiddleware) RequireServiceToken(next echo.HandlerFunc) echo.Hand
 		}
 
 		c.Set("auth_type", "service_token")
+
+		return next(c)
+	}
+}
+
+func (auth *AuthMiddleware) RequireSessionCookie(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		configuredToken := auth.server.Config.Auth.SessionCookieToken
+		if configuredToken == "" {
+			auth.server.Logger.Error().
+				Str("function", "RequireSessionCookie").
+				Str("request_id", GetRequestID(c)).
+				Msg("cookie authentication is not configured")
+			return errs.NewUnauthorizedError("Cookie authentication is not configured", false)
+		}
+
+		sessionCookie, err := c.Cookie(SessionCookieName)
+		if err != nil || sessionCookie.Value == "" {
+			auth.server.Logger.Warn().
+				Str("function", "RequireSessionCookie").
+				Str("request_id", GetRequestID(c)).
+				Msg("missing session cookie")
+			return errs.NewUnauthorizedError("Missing session cookie", false)
+		}
+
+		if subtle.ConstantTimeCompare([]byte(sessionCookie.Value), []byte(configuredToken)) != 1 {
+			auth.server.Logger.Warn().
+				Str("function", "RequireSessionCookie").
+				Str("request_id", GetRequestID(c)).
+				Msg("invalid session cookie")
+			return errs.NewUnauthorizedError("Invalid session cookie", false)
+		}
+
+		c.Set("auth_type", "cookie")
 
 		return next(c)
 	}

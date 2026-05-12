@@ -66,6 +66,11 @@ export const OpenAPI = Object.assign(
           name: "x-service-token",
           in: "header",
         },
+        cookieAuth: {
+          type: "apiKey",
+          name: "auth_session",
+          in: "cookie",
+        },
       },
     },
   }

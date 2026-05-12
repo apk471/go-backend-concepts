@@ -5,7 +5,7 @@ export const getSecurityMetadata = ({
   securityType = "bearer",
 }: {
   security?: boolean;
-  securityType?: "bearer" | "service";
+  securityType?: "bearer" | "service" | "cookie";
 } = {}) => {
   const openApiSecurity = match(securityType)
     .with("bearer", () => [
@@ -16,6 +16,11 @@ export const getSecurityMetadata = ({
     .with("service", () => [
       {
         "x-service-token": [],
+      },
+    ])
+    .with("cookie", () => [
+      {
+        cookieAuth: [],
       },
     ])
     .exhaustive();
