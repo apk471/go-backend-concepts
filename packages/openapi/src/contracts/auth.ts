@@ -4,6 +4,7 @@ import {
   ZAuthMeResponse,
   ZOAuthLoginResponse,
   ZOAuthTokenResponse,
+  ZServiceTokenResponse,
 } from "@boilerplate/zod";
 import { getSecurityMetadata } from "@/utils.js";
 
@@ -48,6 +49,17 @@ export const authContract = c.router({
     }),
     responses: {
       200: ZOAuthTokenResponse,
+    },
+  },
+  getServiceTokenStatus: {
+    summary: "Validate service token",
+    path: "/api/v1/auth/service-token/status",
+    method: "GET",
+    description:
+      "Validate an opaque service token sent in the x-service-token header.",
+    metadata: getSecurityMetadata({ securityType: "service" }),
+    responses: {
+      200: ZServiceTokenResponse,
     },
   },
 });

@@ -11,6 +11,12 @@ export const ZOAuthLoginResponse = z.object({
   state: z.string(),
 });
 
+export const ZServiceTokenResponse = z.object({
+  authenticated: z.boolean(),
+  auth_type: z.string(),
+  message: z.string(),
+});
+
 export const ZOAuthTokenResponse = z.object({
   access_token: z.string(),
   token_type: z.string(),

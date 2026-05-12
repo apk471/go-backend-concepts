@@ -33,6 +33,12 @@ type OAuthSessionResponse struct {
 	State   string `json:"state"`
 }
 
+type ServiceTokenResponse struct {
+	Authenticated bool   `json:"authenticated"`
+	AuthType      string `json:"auth_type"`
+	Message       string `json:"message"`
+}
+
 type OAuthTokenResponse struct {
 	AccessToken  string          `json:"access_token"`
 	TokenType    string          `json:"token_type"`
@@ -62,6 +68,14 @@ func (h *AuthHandler) GetMe(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, response)
+}
+
+func (h *AuthHandler) GetServiceTokenStatus(c echo.Context) error {
+	return c.JSON(http.StatusOK, ServiceTokenResponse{
+		Authenticated: true,
+		AuthType:      getStringContextValue(c, "auth_type"),
+		Message:       "Service token accepted",
+	})
 }
 
 func (h *AuthHandler) StartOAuth(c echo.Context) error {

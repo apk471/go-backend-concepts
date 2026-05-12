@@ -160,6 +160,50 @@
         }
       }
     },
+    "/api/v1/auth/service-token/status": {
+      "get": {
+        "description": "Validate an opaque service token sent in the x-service-token header.",
+        "summary": "Validate service token",
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [],
+        "operationId": "getServiceTokenStatus",
+        "responses": {
+          "200": {
+            "description": "200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "authenticated": {
+                      "type": "boolean"
+                    },
+                    "auth_type": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "authenticated",
+                    "auth_type",
+                    "message"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-service-token": []
+          }
+        ]
+      }
+    },
     "/status": {
       "get": {
         "description": "Get health status",
