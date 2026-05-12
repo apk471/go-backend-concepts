@@ -1,8 +1,10 @@
 package middleware
 
 import (
+	"crypto/subtle"
 	"encoding/json"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/apk471/go-boilerplate/internal/errs"
@@ -11,7 +13,6 @@ import (
 	clerkhttp "github.com/clerk/clerk-sdk-go/v2/http"
 	"github.com/labstack/echo/v4"
 )
-
 
 type AuthMiddleware struct {
 	server *server.Server
@@ -22,7 +23,6 @@ func NewAuthMiddleware(s *server.Server) *AuthMiddleware {
 		server: s,
 	}
 }
-
 
 func (auth *AuthMiddleware) RequireAuth(next echo.HandlerFunc) echo.HandlerFunc {
 	return echo.WrapMiddleware(
@@ -73,4 +73,34 @@ func (auth *AuthMiddleware) RequireAuth(next echo.HandlerFunc) echo.HandlerFunc 
 
 		return next(c)
 	})
+}
+
+func (auth *AuthMiddleware) RequireServiceToken(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		configuredToken := auth.server.Config.Auth.ServiceToken
+		if configuredToken == "" {
+			auth.server.Logger.Error().
+				Str("function", "RequireServiceToken").
+				Str("request_id", GetRequestID(c)).
+				Msg("service token authentication is not configured")
+			return errs.NewUnauthorizedError("Service token authentication is not configured", false)
+		}
+
+		token := c.Request().Header.Get("x-service-token")
+		if token == "" {
+			token = strings.TrimPrefix(c.Request().Header.Get("Authorization"), "Bearer ")
+		}
+
+		if token == "" || subtle.ConstantTimeCompare([]byte(token), []byte(configuredToken)) != 1 {
+			auth.server.Logger.Warn().
+				Str("function", "RequireServiceToken").
+				Str("request_id", GetRequestID(c)).
+				Msg("invalid service token")
+			return errs.NewUnauthorizedError("Invalid service token", false)
+		}
+
+		c.Set("auth_type", "service_token")
+
+		return next(c)
+	}
 }
