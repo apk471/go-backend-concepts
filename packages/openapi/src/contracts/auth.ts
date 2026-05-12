@@ -2,6 +2,7 @@ import { initContract } from "@ts-rest/core";
 import { z } from "zod";
 import {
   ZAuthMeResponse,
+  ZCookieAuthResponse,
   ZOAuthLoginResponse,
   ZOAuthTokenResponse,
   ZServiceTokenResponse,
@@ -60,6 +61,17 @@ export const authContract = c.router({
     metadata: getSecurityMetadata({ securityType: "service" }),
     responses: {
       200: ZServiceTokenResponse,
+    },
+  },
+  getCookieStatus: {
+    summary: "Validate session cookie",
+    path: "/api/v1/auth/cookie/status",
+    method: "GET",
+    description:
+      "Validate cookie-based authentication using the auth_session cookie.",
+    metadata: getSecurityMetadata({ securityType: "cookie" }),
+    responses: {
+      200: ZCookieAuthResponse,
     },
   },
 });

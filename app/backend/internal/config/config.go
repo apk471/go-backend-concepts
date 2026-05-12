@@ -54,9 +54,10 @@ type IntegrationConfig struct {
 }
 
 type AuthConfig struct {
-	SecretKey    string      `koanf:"secret_key"`
-	ServiceToken string      `koanf:"service_token"`
-	OAuth        OAuthConfig `koanf:"oauth"`
+	SecretKey          string      `koanf:"secret_key"`
+	ServiceToken       string      `koanf:"service_token"`
+	SessionCookieToken string      `koanf:"session_cookie_token"`
+	OAuth              OAuthConfig `koanf:"oauth"`
 }
 
 type OAuthConfig struct {
